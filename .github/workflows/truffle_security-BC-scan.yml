@@ -1,0 +1,23 @@
+name: Truffle Security Secrets Scanner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  secrets-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Truffle Security
+        run: npm install -g truffle-security
+
+      - name: Run Secrets Scanner
+        run: truffle run truffle-security
