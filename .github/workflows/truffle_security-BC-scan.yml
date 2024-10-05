@@ -6,71 +6,47 @@ on:
       - main
   pull_request:
 
+permissions: 
+  contents: read 
+  id-token: write 
+  issues: write 
+  pull-requests: write
+
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Secret Scanning
-      uses: trufflesecurity/trufflehog@main
-      with:
-        extra_args: --only-verified
-#on:
- # push:
-  #  branches:
-   #   - main
-#  pull_request:
-#    branches:
-#      - main
+  #test:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - name: Checkout code
+  #    uses: actions/checkout@v4
+  #    with:
+  #      fetch-depth: 0
+  #  - name: Secret Scanning
+  #    uses: trufflesecurity/trufflehog@main
+  #    with:
+  #      extra_args: --only-verified
+  TruffleHog: 
+    runs-on: ubuntu-latest 
+    defaults: 
+      run: 
+        shell: bash 
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v3 
+        with: 
+          fetch-depth: 0
+      - name: TruffleHog OSS 
+        id: trufflehog 
+        uses: trufflesecurity/trufflehog@add-actions-cli-switch 
+        continue-on-error: true 
+        with: 
+          path: ./ 
+          base: "${{ github.event.repository.default_branch }}" 
+          head: HEAD 
+          extra_args: --debug --only-verified
+      - name: Scan Results Status 
+        if: steps.trufflehog.outcome == 'failure' 
+        run: exit 1
 
-#jobs:
-#  secrets-scan:
-#    runs-on: ubuntu-latest
 
- #   steps:
- #     - name: Checkout repository
- #       uses: actions/checkout@v2
 
- #     - name: Setup Node.js
- #       uses: actions/setup-node@v2
- #       with:
- #         node-version: '16'
-
-  #    - name: Install Dependencies
-   #     run: |
-    #      npm install truffle truffle-security
-
- #     - name: List Installed Packages
-  #      run: npm list --depth=0
-
-#      - name: Check Truffle Security Version
- #       run: npm list truffle-security
-
-  #    - name: Create temporary truffle-config.js
-   #     run: |
-    #      echo "module.exports = {" > truffle-config.js
-     #     echo "  networks: {" >> truffle-config.js
-      #    echo "    development: {" >> truffle-config.js
-       #   echo "      host: '127.0.0.1'," >> truffle-config.js
- #         echo "      port: 7545," >> truffle-config.js
-  #        echo "      network_id: '*'" >> truffle-config.js
-   #       echo "    }" >> truffle-config.js
-    #      echo "  }," >> truffle-config.js
-     #     echo "  compilers: {" >> truffle-config.js
-      #    echo "    solc: {" >> truffle-config.js
- #         echo "      version: '0.8.0'" >> truffle-config.js
-  #        echo "    }" >> truffle-config.js
-   #       echo "  }," >> truffle-config.js
-    #      echo "  plugins: ['truffle-security']" >> truffle-config.js
-     #     echo "};" >> truffle-config.js
-
- #     - name: Show truffle-config.js
-  #      run: cat truffle-config.js
-#
- #     - name: Run Truffle Security Directly
-  #
-  
-        #run: npx truffle-security scan
