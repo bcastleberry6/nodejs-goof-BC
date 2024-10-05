@@ -28,10 +28,11 @@ jobs:
 
       - name: Create temporary truffle-config.js
         run: |
-          echo "module.exports = { networks: { development: { host: '127.0.0.1', port: 7545, network_id: '*' } }, compilers: { solc: { version: '0.8.0' } } };" > truffle-config.js
+          echo "module.exports = { networks: { development: { host: '127.0.0.1', port: 7545, network_id: '*' } }, compilers: { solc: { version: '0.8.0' } }, plugins: ['truffle-security'] };" > truffle-config.js
 
       - name: Run Secrets Scanner
         run: truffle run truffle-security
+
 
 
 
