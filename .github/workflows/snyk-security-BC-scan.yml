@@ -48,12 +48,21 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk-dependency.sarif
+
       - name: Monitor dependencies with Snyk
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
           command: monitor
+
+      - name: Print sarif-code file
+        run: cat snyk-code.sarif
+        
+      - name: Total SAST security issues
+        run: |
+            length=$(cat snyk-code.sarif | jq '.runs[0].results | length')
+            echo "RESULTS_LENGTH=$length" >> $GITHUB_ENV
 
 #name: Snyk Security
 
