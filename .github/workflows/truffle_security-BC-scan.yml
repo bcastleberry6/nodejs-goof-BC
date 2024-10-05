@@ -34,6 +34,9 @@ jobs:
       - name: Check Truffle Plugins
         run: npx truffle version
 
+      - name: List Available Truffle Plugins
+        run: npx truffle run --help
+
       - name: Create temporary truffle-config.js
         run: |
           echo "module.exports = {" > truffle-config.js
