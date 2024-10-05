@@ -55,7 +55,7 @@ jobs:
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --org=bcastleberry6 --sarif > snyk-sarif4.json
+        run: snyk code test --org=bcastleberry6 --sarif --debug > snyk-sarif4.json
       #  run: snyk code test --sarif > sarif3.json 2 || true
 
       #- name: Display SARIF file
