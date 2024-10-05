@@ -19,17 +19,16 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}  # Necessary for pull request workflow trigger
 
-      - name: Trufflehog Actions Scan
+      - name: Run Trufflehog Actions Scan
         uses: edplato/trufflehog-actions-scan@master
         with:
           scanArguments: "--regex --entropy=False --max_depth=50"  # Adjust as needed
 
-      # If you want to use custom regex rules
-      # - name: Trufflehog Actions Scan with custom rules
+      # Uncomment the following if you want to use custom regex rules
+      # - name: Run Trufflehog Actions Scan with Custom Rules
       #   uses: edplato/trufflehog-actions-scan@master
       #   with:
       #     scanArguments: "--regex --entropy=False --max_depth=5 --rules /regexes.json"
-
 
 
 
