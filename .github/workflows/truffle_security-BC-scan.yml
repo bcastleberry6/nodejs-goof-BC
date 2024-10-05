@@ -26,6 +26,9 @@ jobs:
           npm install -g truffle
           npm install -g truffle-security
 
+      - name: List Installed Packages
+        run: npm list -g --depth=0
+
       - name: Create temporary truffle-config.js
         run: |
           echo "module.exports = { networks: { development: { host: '127.0.0.1', port: 7545, network_id: '*' } }, compilers: { solc: { version: '0.8.0' } }, plugins: ['truffle-security'] };" > truffle-config.js
