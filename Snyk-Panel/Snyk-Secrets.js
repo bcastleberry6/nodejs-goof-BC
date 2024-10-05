@@ -36,8 +36,3 @@ const secrets_5 = {
 
 module.exports = secrets;
 
-
-aws_access_key_id = AKIA2UC3BSXr32r3MHXAVJYEX
-aws_secret_access_key = 21g0sQhpCINBrbDYfqx1TLLOOo+Z/WuF1GEdie8B
-output = json
-region = us-east-2
