@@ -32,13 +32,15 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
           command: code test --sarif-file-output=snyk-code.sarif
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk to check for SCA vulnerabilities
         uses: snyk/actions/node@master
         continue-on-error: true # To make sure that SARIF upload gets called
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
-          args: --sarif-file-output=snyk.sarif
+          command: test --sarif-file-output=snyk-dependency.sarif       
+        #with:
+        #  args: --sarif-file-output=snyk.sarif
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
