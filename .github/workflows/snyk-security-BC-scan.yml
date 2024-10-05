@@ -51,14 +51,14 @@ jobs:
           # This is where you will need to introduce the Snyk API token created with your Snyk account
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Upload Sarif File 
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: results.sarif
+    
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --sarif > results.sarif || true
+        run: snyk code test --sarif > sarif3.json || true
+
+      - name: Display SARIF file
+        run: cat sarif3.json
 
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       #- name: Snyk Open Source monitor
@@ -80,4 +80,4 @@ jobs:
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: sarif3.json
