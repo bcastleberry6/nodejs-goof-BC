@@ -58,11 +58,23 @@ jobs:
 
       - name: Print sarif-code file
         run: cat snyk-code.sarif
-        
+
       - name: Total SAST security issues
         run: |
             length=$(cat snyk-code.sarif | jq '.runs[0].results | length')
             echo "RESULTS_LENGTH=$length" >> $GITHUB_ENV
+
+      - name: Send notification on Slack using Webhooks
+        uses: slackapi/slack-github-action@v1.24.0
+        if: always()
+        with:
+          payload: |
+            {
+              "text": "*The Snyk SAST scan result for repo, , is : $({ job.status })* \n"
+              }
+        env:
+          SLACK_WEBHOOK_URL: $({ secrets.slack_webhook_url })     
+
 
 #name: Snyk Security
 
