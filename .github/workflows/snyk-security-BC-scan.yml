@@ -70,7 +70,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "*The Snyk SAST scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH }}* \n*Detail*: https://github.com/${{ github.repository }}/actions/run/${{ github.run_id }}"
+              "text": "*The Snyk SAST scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
               }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}     
