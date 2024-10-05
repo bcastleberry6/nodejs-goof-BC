@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14' # Specify the Node.js version
+          node-version: '16' # Update to a supported version
 
       - name: Install Truffle and Truffle Security
         run: |
@@ -28,6 +28,7 @@ jobs:
 
       - name: Run Secrets Scanner
         run: truffle run truffle-security
+
 
 
 
