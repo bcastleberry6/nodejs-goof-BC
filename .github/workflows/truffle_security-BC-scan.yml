@@ -1,11 +1,23 @@
 name: Truffle Security Secrets Scanner
 
-steps:
-- uses: actions/checkout@v2
-- uses: UnicornGlobal/trufflehog-actions-scan@master
-  with:
-    branch: ${{ github.head_ref }}
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Secret Scanning
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified
 #on:
  # push:
   #  branches:
