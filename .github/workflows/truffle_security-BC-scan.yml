@@ -6,12 +6,6 @@ on:
       - main
   pull_request:
 
-permissions: 
-  contents: read 
-  id-token: write 
-  issues: write 
-  pull-requests: write
-
 
 jobs:
   test:
@@ -27,18 +21,4 @@ jobs:
         extra_args: --only-verified
 
         
-    - name: Handle Found Secrets
-      if: steps.truffle_scan.outputs.secrets_found == 'true'
-      run: |
-        echo "Secrets found! Please review the logs and take necessary actions."
-        # Here you could add commands to notify a team, create an issue, etc.
-        
-    - name: Notify Team
-      if: steps.truffle_scan.outputs.secrets_found == 'true'
-      uses: some-notification-action@v1
-      with:
-        message: "Secrets were detected in the latest commit. Please investigate."
-
-
-
 
