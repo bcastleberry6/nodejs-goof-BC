@@ -28,6 +28,12 @@ jobs:
       - name: List Installed Packages
         run: npm list --depth=0
 
+      - name: Check Truffle Security Version
+        run: npm list truffle-security
+
+      - name: Check Truffle Plugins
+        run: npx truffle version
+
       - name: Create temporary truffle-config.js
         run: |
           echo "module.exports = {" > truffle-config.js
@@ -51,14 +57,3 @@ jobs:
 
       - name: Run Secrets Scanner
         run: npx truffle run truffle-security
-
-
-
-
-
-
-
-
-
-
-
