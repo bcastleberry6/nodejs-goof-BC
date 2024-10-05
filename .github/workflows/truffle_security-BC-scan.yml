@@ -31,10 +31,25 @@ jobs:
 
       - name: Create temporary truffle-config.js
         run: |
-          echo "module.exports = { networks: { development: { host: '127.0.0.1', port: 7545, network_id: '*' } }, compilers: { solc: { version: '0.8.0' } }, plugins: ['truffle-security'] };" > truffle-config.js
+          echo "module.exports = {" > truffle-config.js
+          echo "  networks: {" >> truffle-config.js
+          echo "    development: {" >> truffle-config.js
+          echo "      host: '127.0.0.1'," >> truffle-config.js
+          echo "      port: 7545," >> truffle-config.js
+          echo "      network_id: '*'" >> truffle-config.js
+          echo "    }" >> truffle-config.js
+          echo "  }," >> truffle-config.js
+          echo "  compilers: {" >> truffle-config.js
+          echo "    solc: {" >> truffle-config.js
+          echo "      version: '0.8.0'" >> truffle-config.js
+          echo "    }" >> truffle-config.js
+          echo "  }," >> truffle-config.js
+          echo "  plugins: ['truffle-security']" >> truffle-config.js
+          echo "};" >> truffle-config.js
 
       - name: Run Secrets Scanner
         run: truffle run truffle-security
+
 
 
 
