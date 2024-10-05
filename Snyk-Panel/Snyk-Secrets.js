@@ -26,3 +26,11 @@ const secrets_4 = {
 };
 
 module.exports = secrets;
+
+
+const secrets_5 = {
+    apiKey: "YOUR_API_KEY_5",
+    dbPassword: "YOUR_DB_PASSWORD_5"
+};
+
+module.exports = secrets;
