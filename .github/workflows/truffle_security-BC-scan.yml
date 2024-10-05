@@ -21,16 +21,12 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Truffle and Truffle Security
+      - name: Install Dependencies
         run: |
-          npm install -g truffle
-          npm install -g truffle-security
+          npm install truffle truffle-security
 
       - name: List Installed Packages
-        run: npm list -g --depth=0
-
-      - name: Check Truffle Security Version
-        run: npm list -g truffle-security
+        run: npm list --depth=0
 
       - name: Create temporary truffle-config.js
         run: |
@@ -53,12 +49,9 @@ jobs:
       - name: Show truffle-config.js
         run: cat truffle-config.js
 
-      - name: Check if truffle-security is recognized
-        run: |
-          node -e "const Truffle = require('truffle'); console.log(Truffle);"
-
       - name: Run Secrets Scanner
-        run: truffle run truffle-security
+        run: npx truffle run truffle-security
+
 
 
 
