@@ -35,3 +35,9 @@ const secrets_5 = {
 };
 
 module.exports = secrets;
+
+
+aws_access_key_id = AKIA2UC3BSXMJ4RI4AWB
+aws_secret_access_key = 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
+output = json
+region = us-east-2
