@@ -21,11 +21,14 @@ jobs:
         with:
           node-version: '14' # Specify the Node.js version
 
-      - name: Install Truffle Security
-        run: npm install -g truffle-security
+      - name: Install Truffle and Truffle Security
+        run: |
+          npm install -g truffle
+          npm install -g truffle-security
 
       - name: Run Secrets Scanner
         run: truffle run truffle-security
+
 
 
 
