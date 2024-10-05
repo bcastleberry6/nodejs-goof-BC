@@ -64,13 +64,29 @@ jobs:
             length=$(cat snyk-code.sarif | jq '.runs[0].results | length')
             echo "RESULTS_LENGTH=$length" >> $GITHUB_ENV
 
-      - name: Send notification on Slack using Webhooks
+      - name: Send SAST notification on Slack using Webhooks
         uses: slackapi/slack-github-action@v1.24.0
         if: always()
         with:
           payload: |
             {
               "text": "*The Snyk SAST scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
+              }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}     
+
+      - name: Total SCA security issues
+        run: |
+            length=$(cat snyk-dependency.sarif | jq '.runs[0].results | length')
+            echo "RESULTS_LENGTH_2=$length" >> $GITHUB_ENV
+
+      - name: Send SCA notification on Slack using Webhooks
+        uses: slackapi/slack-github-action@v1.24.0
+        if: always()
+        with:
+          payload: |
+            {
+              "text": "*The Snyk SAST scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH_2 }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
               }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}     
