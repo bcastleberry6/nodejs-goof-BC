@@ -36,6 +36,12 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk.sarif
+      - name: Monitor dependencies with Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        with:
+          command: monitor
 
 #name: Snyk Security
 
