@@ -29,9 +29,9 @@ module.exports = secrets;
 
 
 const secrets_5 = {
-    apiKey: "YOUR_API_KEY_5",
-    dbPassword: "YOUR_DB_PASSWORD_5",
-    aws_secret_key: "asjdiefrejiw"
+    apiKey: "YOUR_API_KEY_6",
+    dbPassword: "YOUR_DB_PASSWORD_6",
+    
 };
 
 module.exports = secrets;

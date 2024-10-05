@@ -23,8 +23,8 @@ jobs:
         fetch-depth: 0
     - name: Secret Scanning
       uses: trufflesecurity/trufflehog@main
-      with:
-        extra_args: --only-verified
+  #    with:
+   #     extra_args: --only-verified
   #TruffleHog: 
    # runs-on: ubuntu-latest 
     #defaults: 
