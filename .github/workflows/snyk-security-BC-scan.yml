@@ -55,13 +55,14 @@ jobs:
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run: snyk code test --sarif > sarif3.json 2 || true
+        run: snyk code test --org=bcastleberry6 --sarif > snyk-sarif4.json
+      #  run: snyk code test --sarif > sarif3.json 2 || true
 
-      - name: Display SARIF file
-        run: cat sarif3.json
+      #- name: Display SARIF file
+       # run: cat sarif3.json
 
-      - name: Validate SARIF file
-        run: jq empty sarif3.json
+     # - name: Validate SARIF file
+      #  run: jq empty sarif3.json
 
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       #- name: Snyk Open Source monitor
@@ -83,4 +84,4 @@ jobs:
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: sarif3.json
+          sarif_file: sarif4.json
