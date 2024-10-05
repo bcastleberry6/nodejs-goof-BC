@@ -25,6 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Run Snyk Code Test for SAST
+        uses: snyk/actions/node@master
+        continue-on-error: true # Allows the workflow to proceed even if vulnerabilities are found
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        with:
+          command: code test --sarif-file-output=snyk-code.sarif
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         continue-on-error: true # To make sure that SARIF upload gets called
