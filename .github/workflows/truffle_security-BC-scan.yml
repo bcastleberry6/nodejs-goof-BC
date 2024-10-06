@@ -28,12 +28,9 @@ jobs:
     - name: Save TruffleHog Output
       run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
 
-   # - name: Check for secrets file
-    #  run: |
-     #   if [[ ! -f ./trufflehog-secrets.json ]]; then
-      #    echo "Secrets file not found!"
-       #   exit 1
-        #fi
+    - name: Convert TruffleHog Output to SARIF
+      run: |
+        python convert_to_sarif.py trufflehog-secrets.json trufflehog-secrets.sarif
 
     - name: Install Snyk CLI
       run: npm install -g snyk 
@@ -41,14 +38,13 @@ jobs:
 
     - name: Monitor TruffleHog identified secrets with Snyk
       uses: trufflesecurity/trufflehog@main
-      #uses: snyk/actions/node@master
       with: 
           command: monitor --all-projects --json-file=trufflehog-secrets.json
       env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  
       continue-on-error: true
 
-
+#With Enterprise Plan
     - name: Send results to Snyk
       run: |
         curl -X POST "https://snyk.io/api/v1/test" \
