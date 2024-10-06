@@ -34,6 +34,18 @@ jobs:
         with:
           command: code test --sarif-file-output=snyk-code.sarif
 
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk-code.sarif
+
+      - name: Monitor SAST results with Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        with:
+          command: monitor  
+
       - name: Run Snyk to check for SCA vulnerabilities
         uses: snyk/actions/node@master
         continue-on-error: true # To make sure that SARIF upload gets called
@@ -48,6 +60,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk-dependency.sarif
+    
 
       - name: Monitor dependencies with Snyk
         uses: snyk/actions/node@master
