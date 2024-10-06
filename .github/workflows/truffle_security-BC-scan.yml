@@ -20,7 +20,8 @@ jobs:
       id: trufflehog
       uses: trufflesecurity/trufflehog@main
       with:
-        extra_args: --only-verified --json
+        extra_args: --json
+        #extra_args: --only-verified
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
@@ -32,7 +33,7 @@ jobs:
       run: ls -al  # Check if the script is in the expected location
 
     - name: Print TruffleHog Output
-      run: echo "${{ steps.trufflehog.outputs.output }}"
+      run: cat trufflehog-secrets.json
 
     - name: Install Snyk CLI
       run: npm install -g snyk 
