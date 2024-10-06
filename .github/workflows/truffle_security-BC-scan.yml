@@ -23,6 +23,13 @@ jobs:
         extra_args: --only-verified --sarif-file-output=trufflehog-secrets.sarif
       continue-on-error: true
 
+    - name: Monitor secrets with Snyk
+      uses: trufflesecurity/trufflehog@main
+    env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
+        run: snyk monitor --all-projects --file=trufflehog-secrets.sarif --token=$SNYK_TOKEN_2
+        continue-on-error: true
+
    # - name: Process TruffleHog Output
     #  id: process_output
      # run: |
@@ -50,12 +57,7 @@ jobs:
         #fi
 
 
-    - name: Monitor secrets with Snyk
-      uses: trufflesecurity/trufflehog@main
-    env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
-        run: snyk monitor --all-projects --file=trufflehog-secrets.sarif --token=$SNYK_TOKEN_2
-    continue-on-error: true
+
 
 
 
