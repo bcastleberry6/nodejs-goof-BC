@@ -1,4 +1,4 @@
-name: Truffle Security Secrets Scanner
+name: Truffle Security Secrets Scanner and GitHub Secret Scanning
 
 on:
   push:
@@ -15,48 +15,52 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Secret Scanning
+      - name: Secret Scanning with TruffleHog
         id: trufflehog
         uses: trufflesecurity/trufflehog@main
         with:
           extra_args: --only-verified
         continue-on-error: true
 
-      - name: Debug TruffleHog Output
+      - name: Get GitHub Secret Scanning Results
+        id: secret_scanning
         run: |
-          echo "Raw TruffleHog output:"
-          echo "${{ steps.trufflehog.outputs.report }}"
+          secrets=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/secret-scanning/alerts")
 
-      - name: Send TruffleHog findings to Snyk
+          echo "Secrets found: $secrets"
+          echo "::set-output name=report::$secrets"
+
+      - name: Combine Findings
+        id: combine_findings
         run: |
-          report="${{ steps.trufflehog.outputs.report }}"
-          
-          # Check if report is empty
-          if [ -z "$report" ]; then
-            echo "No output from TruffleHog. Exiting."
-            exit 1
-          fi
+          trufflehog_report="${{ steps.trufflehog.outputs.report }}"
+          github_secrets="${{ steps.secret_scanning.outputs.report }}"
 
-          # Convert report to Snyk format
-          snyk_payload=$(echo "$report" | jq '[.[] | { id: .path, title: .issue, severity: .severity, description: .reason }]')
+          # Combine the findings into a single JSON array
+          combined_payload=$(echo "$trufflehog_report" "$github_secrets" | jq -s '[.[][]]')
 
-          # Structure the payload as expected by Snyk
-          snyk_json_payload=$(jq -n --argjson issues "$snyk_payload" '{ issues: $issues }')
+          # Check the combined payload
+          echo "Combined Snyk Payload: $combined_payload"
+          echo "::set-output name=combined_payload::$combined_payload"
 
-          # Check the snyk_payload
-          echo "Snyk Payload: $snyk_json_payload"
+      - name: Send Findings to Snyk
+        run: |
+          combined_payload="${{ steps.combine_findings.outputs.combined_payload }}"
 
-          if [ "$snyk_payload" != "[]" ]; then
+          if [ "$combined_payload" != "[]" ]; then
             response=$(curl -X POST \
               -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "$snyk_json_payload" \
+              -d "{\"issues\": $combined_payload}" \
               "https://snyk.io/api/v1/test")
 
             echo "Snyk API Response: $response"
           else
             echo "No findings to send to Snyk."
           fi
+
 
 
 
