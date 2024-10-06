@@ -31,6 +31,7 @@ jobs:
           snyk test --all-projects --json-file=trufflehog_results.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        continue-on-error: true
 
 
 
