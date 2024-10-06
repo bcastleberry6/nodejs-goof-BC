@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  security-events: read
+  security-events: write  # Allow access to secret scanning events
 
 jobs:
   test:
@@ -34,22 +34,22 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/secret-scanning/alerts")
 
           echo "Secrets found: $secrets"
-          echo "::set-output name=report::$secrets"
+          echo "report=$secrets" >> $GITHUB_ENV  # Use Environment Files instead of set-output
 
       - name: Prepare Snyk Payload
         id: snyk_payload
         run: |
-          github_secrets="${{ steps.secret_scanning.outputs.report }}"
+          github_secrets="${{ env.report }}"
 
           # Format the secrets for Snyk
           snyk_payload=$(echo "$github_secrets" | jq '[.[] | { id: .location.path, title: .secret_type, severity: "high", description: .resolution }]')
 
           echo "Snyk Payload: $snyk_payload"
-          echo "::set-output name=payload::$snyk_payload"
+          echo "payload=$snyk_payload" >> $GITHUB_ENV  # Use Environment Files
 
       - name: Send Findings to Snyk
         run: |
-          snyk_payload="${{ steps.snyk_payload.outputs.payload }}"
+          snyk_payload="${{ env.payload }}"
 
           if [ "$snyk_payload" != "[]" ]; then
             response=$(curl -X POST \
