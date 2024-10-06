@@ -34,7 +34,8 @@ jobs:
        # fi
 
     - name: Monitor secrets with Snyk
-      uses: trufflesecurity/trufflehog@main
+      #uses: trufflesecurity/trufflehog@main
+      uses: snyk/actions/node@master
       #with: 
           #command: monitor
       with:   
