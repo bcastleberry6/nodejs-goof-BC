@@ -25,14 +25,15 @@ jobs:
     - name: Send TruffleHog findings to Snyk
       run: |
           report="${{ steps.trufflehog.outputs.report }}"
-          # Transform report to match Snyk API format
           snyk_payload=$(echo "$report" | jq '[.[] | { id: .path, title: .issue, severity: .severity, description: .reason }]')
-
-          curl -X POST \
+          
+          response=$(curl -X POST \
             -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"issues\": $snyk_payload}" \
-            "https://snyk.io/api/v1/test"
+            "https://snyk.io/api/v1/test")
+          
+          echo "Snyk API Response: $response"
 
 
 
