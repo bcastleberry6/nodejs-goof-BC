@@ -28,13 +28,8 @@ jobs:
     - name: Save TruffleHog Output
       run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
 
-   # - name: List files
-    #  run: ls -al  # Check if the script is in the expected location
-
-   # - name: Convert TruffleHog Output to SARIF
-    #  run: |
-     #   python convert_to_sarif.py trufflehog-secrets.json trufflehog-secrets.sarif
-
+    - name: List files
+      run: ls -al  # Check if the script is in the expected location
 
     - name: Install Snyk CLI
       run: npm install -g snyk 
@@ -47,6 +42,12 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  
       continue-on-error: true
+
+    - name: Upload TruffleHog JSON file
+      uses: actions/upload-artifact@v2
+      with:
+        name: trufflehog-json
+        path: trufflehog-secrets.json
 
 #With Enterprise Plan
    # - name: Send results to Snyk
