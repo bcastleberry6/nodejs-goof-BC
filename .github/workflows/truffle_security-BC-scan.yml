@@ -33,7 +33,7 @@ jobs:
           curl --request POST \
           --url "https://api.snyk.io/v1" \  # Replace with the correct endpoint
           --header "Content-Type: application/json" \
-          --header "Authorization: token ${{ secrets.SNYK_API_TOKEN }}" \
+          --header "Authorization: token ${{ secrets.SNYK_TOKEN_2 }}" \
           --data '{
             "data": {
               "attributes": {
