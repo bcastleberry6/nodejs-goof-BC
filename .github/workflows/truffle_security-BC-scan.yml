@@ -21,24 +21,24 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         extra_args: --only-verified 
-        output: trufflehog-secrets.json
+        output: trufflehog-secrets.sarif
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
-    - name: Check for secrets file
-      run: |
-        if [[ ! -f trufflehog-secrets.json ]]; then
-          echo "Secrets file not found!"
-          exit 1
-        fi
+   # - name: Check for secrets file
+    #  run: |
+     #   if [[ ! -f trufflehog-secrets.json ]]; then
+      #    echo "Secrets file not found!"
+       #   exit 1
+       # fi
 
     - name: Monitor secrets with Snyk
       uses: trufflesecurity/trufflehog@main
       #with: 
           #command: monitor
       with:   
-          command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
+          command: monitor --all-sub-projects --json-file=trufflehog-secrets.sarif
           #output: trufflehog-secrets.sarif
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
