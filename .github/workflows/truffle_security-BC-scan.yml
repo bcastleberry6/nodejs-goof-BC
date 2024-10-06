@@ -28,9 +28,13 @@ jobs:
     - name: Save TruffleHog Output
       run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
 
+    - name: List files
+      run: ls -al  # Check if the script is in the expected location
+
     - name: Convert TruffleHog Output to SARIF
       run: |
         python convert_to_sarif.py trufflehog-secrets.json trufflehog-secrets.sarif
+
 
     - name: Install Snyk CLI
       run: npm install -g snyk 
