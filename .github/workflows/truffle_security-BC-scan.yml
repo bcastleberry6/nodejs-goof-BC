@@ -21,33 +21,36 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         extra_args: --only-verified 
-        output: ./trufflehog-secrets.sarif
+        output: trufflehog-secrets.sarif
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-      
-       #--sarif-file-output=trufflehog-secrets.sarif
-
-    - name: List Files
-      run: ls -al
-
-    - name: Upload SARIF Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: trufflehog-secrets
-        path: ./trufflehog-secrets.sarif
-    
-    - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: ./trufflehog-secrets.sarif
 
     - name: Monitor secrets with Snyk
       uses: trufflesecurity/trufflehog@main
       with: 
           command: monitor
+          output: trufflehog-secrets.sarif
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
       continue-on-error: true
+      
+       #--sarif-file-output=trufflehog-secrets.sarif
+
+    #- name: List Files
+    #  run: ls -al
+
+    #- name: Upload SARIF Report
+    #  uses: actions/upload-artifact@v3
+     # with:
+     #   name: trufflehog-secrets
+      #  path: ./trufflehog-secrets.sarif
+    
+    #- name: Upload result to GitHub Code Scanning
+     # uses: github/codeql-action/upload-sarif@v2
+     # with:
+      #  sarif_file: ./trufflehog-secrets.sarif
+
+  
 
  
