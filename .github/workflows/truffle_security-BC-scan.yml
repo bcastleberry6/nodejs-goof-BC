@@ -22,30 +22,29 @@ jobs:
       - name: Secret Scanning with TruffleHog
         id: trufflehog
         run: |
-          trufflehog --only-verified --sarif-file-output=trufflehog-secrets.sarif 
+          output=$(trufflehog --only-verified --json .)
+          echo "TRUFFLEHOG_OUTPUT=${output}" >> $GITHUB_ENV
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
-      - name: List files in the directory
-        run: ls -la
-
-      - name: Capture TruffleHog output
+      - name: Send TruffleHog secrets to Snyk
         run: |
-          echo "TruffleHog output:"
-          cat trufflehog-secrets.sarif || echo "No SARIF file created"
+          curl --request POST \
+          --url "https://api.snyk.io/v1/monitor" \  # Replace with the correct endpoint
+          --header "Content-Type: application/json" \
+          --header "Authorization: token ${{ secrets.SNYK_API_TOKEN }}" \
+          --data '{
+            "data": {
+              "attributes": {
+                "secrets": "${{ env.TRUFFLEHOG_OUTPUT }}",
+                "projectName": "bcastleberry6/nodejs-goof-BC",
+                "orgId": "efba75ee-f721-4c0c-9c87-5ff41d45f282"
+              },
+              "type": "project"
+            }
+          }'
 
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: trufflehog-secrets.sarif
-
-      - name: Monitor Trufflehog Secrets results with Snyk
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-        with:
-          command: monitor
 
 
 
