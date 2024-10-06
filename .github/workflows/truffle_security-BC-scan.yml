@@ -17,19 +17,18 @@ jobs:
 
       - name: Secret Scanning
         id: trufflehog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --only-verified
-        continue-on-error: true
-
-      - name: Debug TruffleHog Output
+        run: |
+          mkdir -p trufflehog_output
+          trufflehog --only-verified --json . > trufflehog_output/report.json || echo "TruffleHog scan failed"
+          
+      - name: Check TruffleHog Output
         run: |
           echo "Raw TruffleHog output:"
-          echo "${{ steps.trufflehog.outputs.report }}"
+          cat trufflehog_output/report.json
 
       - name: Send TruffleHog findings to Snyk
         run: |
-          report="${{ steps.trufflehog.outputs.report }}"
+          report=$(cat trufflehog_output/report.json)
           snyk_payload=$(echo "$report" | jq '[.[] | { id: .path, title: .issue, severity: .severity, description: .reason }]')
 
           # Check the snyk_payload
@@ -46,6 +45,7 @@ jobs:
           else
             echo "No findings to send to Snyk."
           fi
+
 
 
 
