@@ -21,7 +21,7 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         extra_args: --only-verified 
-        output: trufflehog-secrets.sarif
+        output: ./trufflehog-secrets.sarif
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
@@ -40,7 +40,7 @@ jobs:
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: trufflehog-secrets.sarif
+        sarif_file: ./trufflehog-secrets.sarif
 
     - name: Monitor secrets with Snyk
       uses: trufflesecurity/trufflehog@main
