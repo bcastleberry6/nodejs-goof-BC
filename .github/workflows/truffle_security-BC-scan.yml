@@ -38,12 +38,12 @@ jobs:
     - name: Install Snyk CLI
       run: npm install -g snyk 
 
-    - name: Send results to Snyk
-      run: |
-        run: snyk test --all-projects --json-file=trufflehog-secrets.json
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-      continue-on-error: true
+   # - name: Send results to Snyk
+    #  run: |
+      #  run: snyk test --all-projects --json-file=trufflehog-secrets.json
+     # env:
+       # SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+      #continue-on-error: true
 
 
     - name: Monitor secrets with Snyk
