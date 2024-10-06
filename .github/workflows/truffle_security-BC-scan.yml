@@ -22,22 +22,14 @@ jobs:
           extra_args: --only-verified
         continue-on-error: true
 
-      - name: Capture TruffleHog Output
-        run: |
-          # Directly capture TruffleHog output to a file
-          trufflehog --only-verified --json . > trufflehog_output.json || true
-          echo "TruffleHog output captured."
-
       - name: Debug TruffleHog Output
         run: |
-          # Read the output from the file
-          report=$(cat trufflehog_output.json)
           echo "Raw TruffleHog output:"
-          echo "$report"
+          echo "${{ steps.trufflehog.outputs.report }}"
 
       - name: Send TruffleHog findings to Snyk
         run: |
-          report=$(cat trufflehog_output.json)
+          report="${{ steps.trufflehog.outputs.report }}"
           
           # Check if report is empty
           if [ -z "$report" ]; then
@@ -65,6 +57,7 @@ jobs:
           else
             echo "No findings to send to Snyk."
           fi
+
 
 
 
