@@ -23,11 +23,17 @@ jobs:
         extra_args: --only-verified --sarif-file-output=trufflehog-secrets.sarif
       continue-on-error: true
 
+ #   - name: Check for verified secrets
+  #    if: steps.trufflehog.outcome == 'failure'
+   #   run: echo "Warning: Verified secrets were found, but the job will continue."
+
+
     - name: Monitor secrets with Snyk
       uses: trufflesecurity/trufflehog@main
     env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
-        run: snyk monitor --all-projects --file=trufflehog-secrets.sarif --token=$SNYK_TOKEN_2
+        run: monitor
+        #run: snyk monitor --all-projects --file=trufflehog-secrets.sarif --token=$SNYK_TOKEN_2
         continue-on-error: true
 
    # - name: Process TruffleHog Output
