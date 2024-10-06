@@ -1,4 +1,4 @@
-name: Truffle Security Secrets Scanner and GitHub Secret Scanning
+name: Truffle Security Secrets Scanner
 
 on:
   push:
@@ -6,44 +6,49 @@ on:
       - main
   pull_request:
 
-permissions:
-  contents: read
-  security-events: write  # Allow access to secret scanning events
-
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Secret Scanning with TruffleHog
-        id: trufflehog
-        run: |
-          output=$(trufflehog --only-verified --json .)
-          echo "TRUFFLEHOG_OUTPUT=${output}" >> $GITHUB_ENV
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+    - name: Secret Scanning
+      id: trufflehog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified
+      continue-on-error: true
 
-      - name: Send TruffleHog secrets to Snyk
-        run: |
-          curl --request POST \
-          --url "https://api.snyk.io/test" \  # Replace with the correct endpoint
-          --header "Content-Type: application/json" \
-          --header "Authorization: token ${{ secrets.SNYK_TOKEN_2 }}" \
-          --data '{
-            "data": {
-              "attributes": {
-                "secrets": "${{ env.TRUFFLEHOG_OUTPUT }}",
-                "projectName": "bcastleberry6/nodejs-goof-BC",
-                "orgId": "efba75ee-f721-4c0c-9c87-5ff41d45f282"
-              },
-              "type": "project"
-            }
-          }'
+    - name: Process TruffleHog Output
+      id: process_output
+      run: |
+        if [[ -f trufflehog.json ]]; then
+          echo "Secrets found:"
+          cat trufflehog.json
+          
+          # You can format the output as needed for Snyk
+          # For example, converting it to a specific JSON format if required
+          
+          # Send the findings to Snyk (assuming you have a command for it)
+          snyk monitor --all-projects --json-file-output=trufflehog.json
+        else
+          echo "No secrets found."
+        fi
+
+    - name: Run Snyk CLI
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      run: |
+        if [[ -f trufflehog.json ]]; then
+          snyk test --all-projects
+        else
+          echo "Skipping Snyk scan as no secrets were found."
+        fi
+
 
 
 
