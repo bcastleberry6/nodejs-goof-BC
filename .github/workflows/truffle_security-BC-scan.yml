@@ -1,42 +1,3 @@
-#name: Scan for Secrets
-
-#on: push
-
-#jobs:
- # trufflehog:
-  #  runs-on: ubuntu-latest
-   # steps:
-    #  - name: Checkout code
-     #   uses: actions/checkout@v2
-      
-#      - name: Install TruffleHog
- #       run: pip install truffleHog
-
-  #    - name: Secret Scanning
-   #     id: trufflehog
-    #    uses: trufflesecurity/trufflehog@main
-     #   with:
-      #    extra_args: --only-verified 
-       #   output: trufflehog-secrets.json
-        #continue-on-error: true
-    #    env:
-     #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-
-
-     # - name: Install Snyk CLI
-      #  run: npm install -g snyk
-
- #     - name: Send results to Snyk
-  #      run: |
-   #       snyk test --all-projects --json-file=trufflehog_results.json
-    #    env:
-     #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-      #  continue-on-error: true
-
-
-
-
-
 name: Truffle Security Secrets Scanner
 
 on:
@@ -59,10 +20,13 @@ jobs:
       id: trufflehog
       uses: trufflesecurity/trufflehog@main
       with:
-        extra_args: --only-verified 
+        extra_args: --only-verified --json
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+    - name: Save TruffleHog Output
+      run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
 
    # - name: Check for secrets file
     #  run: |
@@ -74,21 +38,19 @@ jobs:
     - name: Install Snyk CLI
       run: npm install -g snyk 
 
-    #- name: Send results to Snyk
-     # run: |
-      #  snyk test --all-projects --json-file=trufflehog_results.json
-      #env:
-       # SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-      #continue-on-error: true
-
-
+    - name: Send results to Snyk
+      run: |
+        run: snyk test --all-projects --json-file=trufflehog-secrets.json
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+      continue-on-error: true
 
 
     - name: Monitor secrets with Snyk
       uses: trufflesecurity/trufflehog@main
       #uses: snyk/actions/node@master
       with: 
-          command: monitor
+          command: monitor --all-projects --json-file=trufflehog-secrets.json
       #with:   
        #   command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
         #  output: trufflehog-secrets.sarif
