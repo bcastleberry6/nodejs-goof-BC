@@ -44,7 +44,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload TruffleHog JSON file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: trufflehog-json
         path: trufflehog-secrets.json
