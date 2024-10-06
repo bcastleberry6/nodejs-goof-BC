@@ -19,12 +19,14 @@ jobs:
     - name: Secret Scanning
       id: trufflehog
       uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified 
+        command: trufflehog --path . --sarif --output trufflehog-secrets.sarif
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-      with:
-        extra_args: --only-verified 
-        command: trufflehog --path . --sarif --output trufflehog-secrets.sarif #--sarif-file-output=trufflehog-secrets.sarif
+      
+       #--sarif-file-output=trufflehog-secrets.sarif
     
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
