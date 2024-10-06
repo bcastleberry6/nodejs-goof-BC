@@ -16,24 +16,36 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Secret Scanning
+    - name: TruffhleHog Secret Scanning
       id: trufflehog
       uses: trufflesecurity/trufflehog@main
       with:
-        extra_args: --json
-        #extra_args: --only-verified
+        extra_args: --only-verified--json
       continue-on-error: true
       env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
-    - name: Save TruffleHog Output
-      run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
+    - name: Run JavaScript to Process Output
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'  # Choose your preferred Node.js version
 
-    - name: List files
-      run: ls -al  # Check if the script is in the expected location
+    - name: Execute JavaScript
+      run: |
+        const output = JSON.parse('${{ steps.trufflehog.outputs.output }}');
+        const verifiedSecrets = output.verified || [];
+        console.log(`Number of verified secrets discovered: ${verifiedSecrets.length}`);
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Print TruffleHog Output
-      run: cat trufflehog-secrets.json
+   # - name: Save TruffleHog Output
+    #  run: echo "${{ steps.trufflehog.outputs.json }}" > trufflehog-secrets.json
+
+    #- name: List files
+     # run: ls -al  # Check if the script is in the expected location
+
+    #- name: Print TruffleHog Output
+     # run: cat trufflehog-secrets.json
 
     - name: Install Snyk CLI
       run: npm install -g snyk 
