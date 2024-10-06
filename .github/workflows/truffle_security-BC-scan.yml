@@ -31,7 +31,7 @@ jobs:
       - name: Send TruffleHog secrets to Snyk
         run: |
           curl --request POST \
-          --url "https://api.us.snyk.io/rest" \  # Replace with the correct endpoint
+          --url "https://api.snyk.io/test" \  # Replace with the correct endpoint
           --header "Content-Type: application/json" \
           --header "Authorization: token ${{ secrets.SNYK_TOKEN_2 }}" \
           --data '{
