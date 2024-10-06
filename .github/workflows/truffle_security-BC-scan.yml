@@ -22,7 +22,7 @@ jobs:
           extra_args: --only-verified
         continue-on-error: true
 
-      - name: Check TruffleHog Output
+      - name: Debug TruffleHog Output
         run: |
           echo "Raw TruffleHog output:"
           echo "${{ steps.trufflehog.outputs.report }}"
@@ -30,16 +30,27 @@ jobs:
       - name: Send TruffleHog findings to Snyk
         run: |
           report="${{ steps.trufflehog.outputs.report }}"
+          
+          # Check if report is empty
+          if [ -z "$report" ]; then
+            echo "No output from TruffleHog. Exiting."
+            exit 1
+          fi
+
+          # Convert report to Snyk format
           snyk_payload=$(echo "$report" | jq '[.[] | { id: .path, title: .issue, severity: .severity, description: .reason }]')
 
+          # Structure the payload as expected by Snyk
+          snyk_json_payload=$(jq -n --argjson issues "$snyk_payload" '{ issues: $issues }')
+
           # Check the snyk_payload
-          echo "Snyk Payload: $snyk_payload"
+          echo "Snyk Payload: $snyk_json_payload"
 
           if [ "$snyk_payload" != "[]" ]; then
             response=$(curl -X POST \
               -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "{\"issues\": $snyk_payload}" \
+              -d "$snyk_json_payload" \
               "https://snyk.io/api/v1/test")
 
             echo "Snyk API Response: $response"
