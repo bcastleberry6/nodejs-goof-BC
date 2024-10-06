@@ -21,7 +21,7 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         extra_args: --only-verified 
-        command: trufflehog --path . --sarif --output trufflehog-secrets.sarif
+        command: trufflehog --path . --sarif --output ./trufflehog-secrets.sarif
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
