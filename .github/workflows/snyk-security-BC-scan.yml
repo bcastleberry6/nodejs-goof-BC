@@ -24,7 +24,7 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@master 
 
       - name: Run Snyk Code Test for SAST
         uses: snyk/actions/node@master
@@ -68,26 +68,6 @@ jobs:
         with:
           command: monitor
 
-
-      - name: Secret Scanning
-        id: trufflehog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --only-verified 
-          output: trufflehog-secrets.sarif
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-
-      - name: Monitor secrets with Snyk
-        uses: trufflesecurity/trufflehog@main
-        with: 
-            command: monitor
-            output: trufflehog-secrets.sarif
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
-        continue-on-error: true
-
       #- name: Print sarif-code file
        # run: cat snyk-code.sarif
 
@@ -121,7 +101,36 @@ jobs:
               "text": "*The Snyk SCA scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH_2 }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
               }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}     
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}    
+
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Secret Scanning
+      id: trufflehog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified 
+        output: trufflehog-secrets.sarif
+      continue-on-error: true
+      env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+    - name: Monitor secrets with Snyk
+      uses: trufflesecurity/trufflehog@main
+      with: 
+          command: monitor
+          output: trufflehog-secrets.sarif
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
+      continue-on-error: true           
 
 
 #name: Snyk Security
