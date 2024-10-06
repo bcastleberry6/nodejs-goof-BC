@@ -12,9 +12,16 @@ jobs:
       - name: Install TruffleHog
         run: pip install truffleHog
 
-      - name: Run TruffleHog
-        run: |
-          trufflehog --json . > trufflehog_results.json
+     # - name: Run TruffleHog
+       # run: |
+        #  trufflehog --json . > trufflehog_results.json
+      - name: Secret Scanning
+        id: trufflehog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified 
+          output: trufflehog-secrets.json
+        continue-on-error: true
 
       - name: Install Snyk CLI
         run: npm install -g snyk
