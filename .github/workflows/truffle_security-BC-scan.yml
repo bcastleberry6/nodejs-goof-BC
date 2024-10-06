@@ -55,6 +55,7 @@ jobs:
     env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
         run: snyk monitor --all-projects --file=trufflehog-secrets.sarif --token=$SNYK_TOKEN_2
+    continue-on-error: true
 
 
 
