@@ -1,67 +1,84 @@
-name: Truffle Security Secrets Scanner
+name: Scan for Secrets
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: push
 
 jobs:
-  test:
+  trufflehog:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install TruffleHog
+        run: pip install truffleHog
 
-    - name: Secret Scanning
-      id: trufflehog
-      uses: trufflesecurity/trufflehog@main
-      with:
-        extra_args: --only-verified 
-        output: trufflehog-secrets.json
-      continue-on-error: true
-      env:
+      - name: Run TruffleHog
+        run: |
+          trufflehog --json . > trufflehog_results.json
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Send results to Snyk
+        run: |
+          snyk test --all-projects --json-file=trufflehog_results.json
+        env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
-    - name: Check for secrets file
-      run: |
-        if [[ ! -f trufflehog-secrets.json ]]; then
-          echo "Secrets file not found!"
-          exit 1
-        fi
+
+
+
+
+#name: Truffle Security Secrets Scanner
+
+#on:
+ # push:
+  #  branches:
+   #   - main
+  #pull_request:
+
+#jobs:
+ # test:
+  #  runs-on: ubuntu-latest
+
+   # steps:
+#    - name: Checkout code
+ #     uses: actions/checkout@v4
+  #    with:
+   #     fetch-depth: 0
+
+#    - name: Secret Scanning
+ #     id: trufflehog
+  #    uses: trufflesecurity/trufflehog@main
+   #   with:
+    #    extra_args: --only-verified 
+     #   output: trufflehog-secrets.json
+ #     continue-on-error: true
+  #    env:
+   #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+  #  - name: Check for secrets file
+   #   run: |
+    #    if [[ ! -f trufflehog-secrets.json ]]; then
+     #     echo "Secrets file not found!"
+      #    exit 1
+       # fi
 
       
 
-    - name: Monitor secrets with Snyk
+   # - name: Monitor secrets with Snyk
       #uses: trufflesecurity/trufflehog@main
-      uses: snyk/actions/node@master
+    #  uses: snyk/actions/node@master
       #with: 
           #command: monitor
-      with:   
-          command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
+     # with:   
+      #    command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
           #output: trufflehog-secrets.sarif
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
-      continue-on-error: true
+    #  env:
+      #  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
+     # continue-on-error: true
       
-       #--sarif-file-output=trufflehog-secrets.sarif
-
-    #- name: List Files
-    #  run: ls -al
-
-    #- name: Upload SARIF Report
-    #  uses: actions/upload-artifact@v3
-     # with:
-     #   name: trufflehog-secrets
-      #  path: ./trufflehog-secrets.sarif
-    
-    #- name: Upload result to GitHub Code Scanning
-     # uses: github/codeql-action/upload-sarif@v2
-     # with:
-      #  sarif_file: ./trufflehog-secrets.sarif
+  
 
   
 
