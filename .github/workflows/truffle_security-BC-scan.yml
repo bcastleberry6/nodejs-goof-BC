@@ -24,44 +24,63 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           extra_args: --only-verified
+          command: code test --sarif-file-output=trufflehog-secrets.sarif
         continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        
 
-      - name: Get GitHub Secret Scanning Results
-        id: secret_scanning
-        run: |
-          secrets=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/secret-scanning/alerts")
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trufflehog-secrets.sarif
 
-          echo "Secrets found: $secrets"
-          echo "report=$secrets" >> $GITHUB_ENV  # Use Environment Files instead of set-output
+      - name: Monitor Trufflehog Secrets results with Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        with:
+          command: monitor  
 
-      - name: Prepare Snyk Payload
-        id: snyk_payload
-        run: |
-          github_secrets="${{ env.report }}"
+
+
+
+#      - name: Get GitHub Secret Scanning Results
+ #       id: secret_scanning
+  #      run: |
+   #       secrets=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+    #        -H "Accept: application/vnd.github.v3+json" \
+     #       "https://api.github.com/repos/${{ github.repository }}/secret-scanning/alerts")
+
+#          echo "Secrets found: $secrets"
+ #         echo "report=$secrets" >> $GITHUB_ENV  # Use Environment Files instead of set-output
+#
+ #     - name: Prepare Snyk Payload
+  #      id: snyk_payload
+   #     run: |
+    #      github_secrets="${{ env.report }}"
 
           # Format the secrets for Snyk
-          snyk_payload=$(echo "$github_secrets" | jq '[.[] | { id: .location.path, title: .secret_type, severity: "high", description: .resolution }]')
+     #     snyk_payload=$(echo "$github_secrets" | jq '[.[] | { id: .location.path, title: .secret_type, severity: "high", description: .resolution }]')
 
-          echo "Snyk Payload: $snyk_payload"
-          echo "payload=$snyk_payload" >> $GITHUB_ENV  # Use Environment Files
+      #    echo "Snyk Payload: $snyk_payload"
+       #   echo "payload=$snyk_payload" >> $GITHUB_ENV  # Use Environment Files
 
-      - name: Send Findings to Snyk
-        run: |
-          snyk_payload="${{ env.payload }}"
+ #     - name: Send Findings to Snyk
+  #      run: |
+   #       snyk_payload="${{ env.payload }}"
+#
+ #         if [ "$snyk_payload" != "[]" ]; then
+  #          response=$(curl -X POST \
+   #           -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
+    #          -H "Content-Type: application/json" \
+     #         -d "{\"issues\": $snyk_payload}" \
+      #        "https://snyk.io/api/v1/test")
 
-          if [ "$snyk_payload" != "[]" ]; then
-            response=$(curl -X POST \
-              -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              -d "{\"issues\": $snyk_payload}" \
-              "https://snyk.io/api/v1/test")
-
-            echo "Snyk API Response: $response"
-          else
-            echo "No findings to send to Snyk."
-          fi
+       #     echo "Snyk API Response: $response"
+        #  else
+         #   echo "No findings to send to Snyk."
+ #         fi
 
 
 
