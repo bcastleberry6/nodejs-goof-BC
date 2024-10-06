@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+  security-events: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -32,34 +36,33 @@ jobs:
           echo "Secrets found: $secrets"
           echo "::set-output name=report::$secrets"
 
-      - name: Combine Findings
-        id: combine_findings
+      - name: Prepare Snyk Payload
+        id: snyk_payload
         run: |
-          trufflehog_report="${{ steps.trufflehog.outputs.report }}"
           github_secrets="${{ steps.secret_scanning.outputs.report }}"
 
-          # Combine the findings into a single JSON array
-          combined_payload=$(echo "$trufflehog_report" "$github_secrets" | jq -s '[.[][]]')
+          # Format the secrets for Snyk
+          snyk_payload=$(echo "$github_secrets" | jq '[.[] | { id: .location.path, title: .secret_type, severity: "high", description: .resolution }]')
 
-          # Check the combined payload
-          echo "Combined Snyk Payload: $combined_payload"
-          echo "::set-output name=combined_payload::$combined_payload"
+          echo "Snyk Payload: $snyk_payload"
+          echo "::set-output name=payload::$snyk_payload"
 
       - name: Send Findings to Snyk
         run: |
-          combined_payload="${{ steps.combine_findings.outputs.combined_payload }}"
+          snyk_payload="${{ steps.snyk_payload.outputs.payload }}"
 
-          if [ "$combined_payload" != "[]" ]; then
+          if [ "$snyk_payload" != "[]" ]; then
             response=$(curl -X POST \
               -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "{\"issues\": $combined_payload}" \
+              -d "{\"issues\": $snyk_payload}" \
               "https://snyk.io/api/v1/test")
 
             echo "Snyk API Response: $response"
           else
             echo "No findings to send to Snyk."
           fi
+
 
 
 
