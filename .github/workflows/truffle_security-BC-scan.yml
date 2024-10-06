@@ -22,7 +22,7 @@ jobs:
       - name: Secret Scanning with TruffleHog
         id: trufflehog
         run: |
-          trufflehog --only-verified --sarif-file-output=trufflehog-secrets.sarif .
+          trufflehog --only-verified --sarif-file-output=trufflehog-secrets.sarif 
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
