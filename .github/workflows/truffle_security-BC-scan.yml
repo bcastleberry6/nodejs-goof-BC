@@ -21,26 +21,24 @@ jobs:
 
       - name: Secret Scanning with TruffleHog
         id: trufflehog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --only-verified
-          command: code test --sarif-file-output=trufflehog-secrets.sarif
+        run: |
+          trufflehog --only-verified --sarif-file-output=trufflehog-secrets.sarif .
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
+      - name: List files in the directory
+        run: ls -la
+
       - name: Capture TruffleHog output
         run: |
           echo "TruffleHog output:"
-          cat /path/to/trufflehog/output/log.file  # Adjust this path as necessary
-
-      - name: List files in the directory
-        run: ls -la
+          cat trufflehog-secrets.sarif || echo "No SARIF file created"
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: sarif.json  # Change this if `sarif.json` is the correct file
+          sarif_file: trufflehog-secrets.sarif
 
       - name: Monitor Trufflehog Secrets results with Snyk
         uses: snyk/actions/node@master
@@ -48,6 +46,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
           command: monitor
+
 
 
 
