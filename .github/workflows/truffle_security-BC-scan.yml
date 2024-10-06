@@ -14,11 +14,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Secret Scanning
+        id: trufflehog
         uses: trufflesecurity/trufflehog@main
         with:
           extra_args: --only-verified
         continue-on-error: true
+
+      - name: Check TruffleHog Output
+        run: echo "${{ steps.trufflehog.outputs.report }}"
 
       - name: Send TruffleHog findings to Snyk
         run: |
@@ -27,14 +32,19 @@ jobs:
 
           # Check the snyk_payload
           echo "Snyk Payload: $snyk_payload"
-          
-          response=$(curl -X POST \
-            -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"issues\": $snyk_payload}" \
-            "https://snyk.io/api/v1/test")
 
-          echo "Snyk API Response: $response"
+          if [ "$snyk_payload" != "[]" ]; then
+            response=$(curl -X POST \
+              -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"issues\": $snyk_payload}" \
+              "https://snyk.io/api/v1/test")
+
+            echo "Snyk API Response: $response"
+          else
+            echo "No findings to send to Snyk."
+          fi
+
 
 
 
