@@ -27,11 +27,11 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
 
     - name: Monitor secrets with Snyk
-      #uses: trufflesecurity/trufflehog@main
+      uses: trufflesecurity/trufflehog@main
       #with: 
           #command: monitor
-      run: |  
-          snyk test --all-sub-projects --json-file=trufflehog-secrets.json
+      with:   
+          command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
           #output: trufflehog-secrets.sarif
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
