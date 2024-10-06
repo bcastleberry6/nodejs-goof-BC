@@ -1,78 +1,89 @@
-name: Scan for Secrets
+#name: Scan for Secrets
 
-on: push
-
-jobs:
-  trufflehog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Install TruffleHog
-        run: pip install truffleHog
-
-      - name: Secret Scanning
-        id: trufflehog
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --only-verified 
-          output: trufflehog-secrets.json
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-
-
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-
-      - name: Send results to Snyk
-        run: |
-          snyk test --all-projects --json-file=trufflehog_results.json
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-        continue-on-error: true
-
-
-
-
-
-#name: Truffle Security Secrets Scanner
-
-#on:
- # push:
-  #  branches:
-   #   - main
-  #pull_request:
+#on: push
 
 #jobs:
- # test:
+ # trufflehog:
   #  runs-on: ubuntu-latest
-
    # steps:
-#    - name: Checkout code
- #     uses: actions/checkout@v4
-  #    with:
-   #     fetch-depth: 0
-
-#    - name: Secret Scanning
- #     id: trufflehog
-  #    uses: trufflesecurity/trufflehog@main
-   #   with:
-    #    extra_args: --only-verified 
-     #   output: trufflehog-secrets.json
- #     continue-on-error: true
-  #    env:
-   #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-
-  #  - name: Check for secrets file
-   #   run: |
-    #    if [[ ! -f trufflehog-secrets.json ]]; then
-     #     echo "Secrets file not found!"
-      #    exit 1
-       # fi
-
+    #  - name: Checkout code
+     #   uses: actions/checkout@v2
       
+#      - name: Install TruffleHog
+ #       run: pip install truffleHog
+
+  #    - name: Secret Scanning
+   #     id: trufflehog
+    #    uses: trufflesecurity/trufflehog@main
+     #   with:
+      #    extra_args: --only-verified 
+       #   output: trufflehog-secrets.json
+        #continue-on-error: true
+    #    env:
+     #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+
+     # - name: Install Snyk CLI
+      #  run: npm install -g snyk
+
+ #     - name: Send results to Snyk
+  #      run: |
+   #       snyk test --all-projects --json-file=trufflehog_results.json
+    #    env:
+     #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+      #  continue-on-error: true
+
+
+
+
+
+name: Truffle Security Secrets Scanner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Secret Scanning
+      id: trufflehog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified 
+        output: trufflehog-secrets.json
+      continue-on-error: true
+      env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+    - name: Check for secrets file
+      run: |
+        if [[ ! -f trufflehog-secrets.json ]]; then
+          echo "Secrets file not found!"
+          exit 1
+        fi
+
+    - name: Install Snyk CLI
+      run: npm install -g snyk 
+
+    - name: Send results to Snyk
+      run: |
+        snyk test --all-projects --json-file=trufflehog_results.json
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+      continue-on-error: true
+
+
+
 
    # - name: Monitor secrets with Snyk
       #uses: trufflesecurity/trufflehog@main
