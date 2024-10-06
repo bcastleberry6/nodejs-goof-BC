@@ -59,7 +59,7 @@ jobs:
       id: trufflehog
       uses: trufflesecurity/trufflehog@main
       with:
-        extra_args: --only-verified --json > ./trufflehog-secrets.json
+        extra_args: --only-verified 
       continue-on-error: true
       env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
@@ -74,27 +74,27 @@ jobs:
     - name: Install Snyk CLI
       run: npm install -g snyk 
 
-    - name: Send results to Snyk
-      run: |
-        snyk test --all-projects --json-file=trufflehog_results.json
+    #- name: Send results to Snyk
+     # run: |
+      #  snyk test --all-projects --json-file=trufflehog_results.json
+      #env:
+       # SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+      #continue-on-error: true
+
+
+
+
+    - name: Monitor secrets with Snyk
+      uses: trufflesecurity/trufflehog@main
+      #uses: snyk/actions/node@master
+      with: 
+          command: monitor
+      #with:   
+       #   command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
+        #  output: trufflehog-secrets.sarif
       env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
       continue-on-error: true
-
-
-
-
-   # - name: Monitor secrets with Snyk
-      #uses: trufflesecurity/trufflehog@main
-    #  uses: snyk/actions/node@master
-      #with: 
-          #command: monitor
-     # with:   
-      #    command: monitor --all-sub-projects --json-file=trufflehog-secrets.json
-          #output: trufflehog-secrets.sarif
-    #  env:
-      #  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
-     # continue-on-error: true
       
   
 
