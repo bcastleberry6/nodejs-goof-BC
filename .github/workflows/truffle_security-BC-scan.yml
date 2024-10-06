@@ -22,8 +22,10 @@ jobs:
           extra_args: --only-verified
         continue-on-error: true
 
-      - name: Check TruffleHog Output
-        run: echo "${{ steps.trufflehog.outputs.report }}"
+      - name: Debug TruffleHog Output
+        run: |
+          echo "Raw TruffleHog output:"
+          echo "${{ steps.trufflehog.outputs.report }}"
 
       - name: Send TruffleHog findings to Snyk
         run: |
@@ -44,6 +46,7 @@ jobs:
           else
             echo "No findings to send to Snyk."
           fi
+
 
 
 
