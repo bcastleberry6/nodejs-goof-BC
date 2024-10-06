@@ -53,8 +53,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
           command: test --sarif-file-output=snyk-dependency.sarif       
-        #with:
-        #  args: --sarif-file-output=snyk.sarif
+        
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
@@ -69,8 +68,28 @@ jobs:
         with:
           command: monitor
 
-      - name: Print sarif-code file
-        run: cat snyk-code.sarif
+
+      - name: Secret Scanning
+        id: trufflehog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified 
+          output: trufflehog-secrets.sarif
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
+
+      - name: Monitor secrets with Snyk
+        uses: trufflesecurity/trufflehog@main
+        with: 
+            command: monitor
+            output: trufflehog-secrets.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}  # Use the Snyk Auth Token
+        continue-on-error: true
+
+      #- name: Print sarif-code file
+       # run: cat snyk-code.sarif
 
       - name: Total SAST security issues
         run: |
