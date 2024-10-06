@@ -6,8 +6,8 @@
 
 //module.exports = secrets;
 
-aws_access_key_id = AKIA2UC3BSXMPQOM2N6Z
-aws_secret_access_key = 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
+aws_access_key_id = AKIA2UC3BSXMN4DIMW5W
+aws_secret_access_key = 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
 output = json
 region = us-east-2
 
