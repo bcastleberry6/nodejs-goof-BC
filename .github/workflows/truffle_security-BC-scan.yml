@@ -52,16 +52,16 @@ jobs:
 
     - name: Total Secrets Found
       run: |
-          length=$(cat trufflehog-secrets.json | jq '.runs[0].results | length')
+          length=$(cat trufflehog-secrets.json | jq '.results | length')
           echo "RESULTS_LENGTH_2=$length" >> $GITHUB_ENV
 
-    - name: Send SAST notification on Slack using Webhooks
+    - name: Send TruffleHog Secrets notification on Slack using Webhooks
       uses: slackapi/slack-github-action@v1.24.0
       if: always()
       with:
         payload: |
           {
-            "text": "*The Snyk SAST scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH_2 }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
+            "text": "*The Snyk & TruffleHog Secrets scan result for repo nodejs-goof-BC is : ${{ job.status }}* \n*Number of vulnerabilities : ${{ env.RESULTS_LENGTH_2 }}* \n*Detail*: https://github.com/${{github.repository}}/actions/run/${{github.run_id}}"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}  
