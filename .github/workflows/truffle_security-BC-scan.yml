@@ -6,34 +6,36 @@ on:
       - main
   pull_request:
 
-
-
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Secret Scanning
-      uses: trufflesecurity/trufflehog@main
-      with:
-        extra_args: --only-verified
-      continue-on-error: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified
+        continue-on-error: true
 
-    - name: Send TruffleHog findings to Snyk
-      run: |
+      - name: Send TruffleHog findings to Snyk
+        run: |
           report="${{ steps.trufflehog.outputs.report }}"
           snyk_payload=$(echo "$report" | jq '[.[] | { id: .path, title: .issue, severity: .severity, description: .reason }]')
+
+          # Check the snyk_payload
+          echo "Snyk Payload: $snyk_payload"
           
           response=$(curl -X POST \
             -H "Authorization: token ${{ secrets.SNYK_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"issues\": $snyk_payload}" \
             "https://snyk.io/api/v1/test")
-          
+
           echo "Snyk API Response: $response"
+
 
 
 
