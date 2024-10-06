@@ -28,7 +28,9 @@ jobs:
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
-        
+
+      - name: List files in the directory
+        run: ls -la
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
@@ -40,7 +42,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN_2 }}
         with:
-          command: monitor  
+          command: monitor
+
 
 
 
