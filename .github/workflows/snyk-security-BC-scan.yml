@@ -18,7 +18,7 @@
 
 
 
-name: Snyk Vulnerability Scan 
+name: Snyk SAST and SCA Scan 
 on: push
 jobs:
   security:
